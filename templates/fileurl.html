@@ -12,9 +12,21 @@
 	<script type="text/javascript">
 
 		function button1_click() {
-		alert("버튼을 누르셨습니다.");
+		var url = "popup1.html";
+            	var name = "popup test";
+            	var option = "width = 500, height = 500, top = 100, left = 200, location = no"
+            	window.open(url, name, option);
 		}
-		var x=Number(count);
+
+		function button2_click() {
+		var url = "popup2.html";
+            	var name = "popup test";
+            	var option = "width = 500, height = 500, top = 100, left = 200, location = no"
+            	window.open(url, name, option);
+		}
+			
+
+		var x=Number(30);
 		var y=5;
 		var num=1;
 		document.write("<table>");
@@ -38,17 +50,13 @@
 					document.write("<input type='button' value='단어분석 버튼' onclick='button1_click()';>");
 				 } else if(j==4){
 					document.write("<td>");
-					document.write("<input type='button' value='유사도 분석 버튼' onclick='button1_click()';>");
+					document.write("<input type='button' value='유사도 분석 버튼' onclick='button2_click()';>");
 			      	 } 
 				
 			}
 			document.write("</tr>");
 		}
 		document.write("</table>");
-	</script>
-
-	<script>
-
 	</script>
 
 </body>
