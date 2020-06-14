@@ -2,10 +2,39 @@ import os
 from flask import Flask, render_template, request, redirect, url_for
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
+import re
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def hfilter(s):
+	s = re.sub('[,:;0-9=<>%ㆍ]','',s)
+	s = s.replace('.', '')
+	s = s.replace('(', '')
+	s = s.replace(')', '')
+	s = s.replace('!', '')
+	s = s.replace('?', '')
+	s = s.replace('+', '')
+	s = s.replace('"', '')
+	s = s.replace("'", '')
+	s = s.replace("‘", '')
+	s = s.replace('*', '')
+	s = s.replace('+', '')
+	s = s.replace('-', '')
+	s = s.replace('–', '')
+	s = s.replace('/', '')
+	s = s.replace('[', '')
+	s = s.replace(']', '')
+	s = s.replace('“', '')
+	s = s.replace('”', '')
+	s = s.replace('~', '')
+	s = s.replace('#', '')
+	s = s.replace('@', '')
+	s = s.replace('™', '')
+	return s
 
 @app.route('/', )
 def index():
@@ -13,15 +42,17 @@ def index():
 
 @app.route('/info', methods=['POST'])
 def info():
-	if 'url' in request.form:
+	if 'url' in request.form: # get one url
 		return render_template('oneurl.html', url=request.form['url'])
-	elif 'file' in request.files:
+
+	elif 'file' in request.files: # get file and save as temp file
 		f = request.files['file']
 		filename = secure_filename(f.filename)
 		filepath = "uploads/"+filename
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-		txt = open(filepath, "r")
+
+		txt = open(filepath, "r") # open txt file and read
 		urlList = []
 		count = 0
 		while True:
@@ -29,11 +60,26 @@ def info():
 			if not url:
 				break
 			urlList.append(url.rstrip())
-			count += 1
+		urlCount = len(urlList)
 
-		txt.close()
+
+		txt.close() #delete temp file
 		if os.path.isfile(filepath):
 			os.remove(filepath)
-		print(count)
-		print(urlList)
-		return render_template('fileurl.html', urlList=urlList, count=count)
+
+		wordList=[]
+		wordCount=[]
+		for i in range(0,urlCount): #count the number of words
+			temp=[]
+			req = requests.get(urlList[i])
+			html = req.text
+			soup = BeautifulSoup(html, 'html.parser')
+			lines = soup.find_all('p')
+
+			for line in lines:
+				temp.extend(hfilter(line.text).split())
+			wordList.append(temp)
+			wordCount.append(len(temp))
+
+		return render_template('fileurl.html', urlList=urlList, urlCount=urlCount, wordList=wordList, wordCount=wordCount)
+
