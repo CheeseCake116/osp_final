@@ -15,4 +15,4 @@ cp -r templates temp
 cd temp
 
 echo 'launching app.py...'
-py app.py
+python app.py
