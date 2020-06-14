@@ -6,11 +6,11 @@ echo $DIR
 cd $DIR
 echo 'creating temp directory...'
 mkdir -p 'temp'
-
+mkdir -p 'temp/uploads'
 
 echo 'copying source files...'
 cp app.py temp
-cp -r template temp
+cp -r templates temp
 
 cd temp
 
