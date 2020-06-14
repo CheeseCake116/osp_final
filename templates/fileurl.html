@@ -1,0 +1,11 @@
+<html>
+<body>
+<script>
+	var count = {{count|tojson}};
+	var urlList = {{urlList|tojson}};
+	for(var i = 0; i < count; i++) {
+		document.write("<div>"+urlList[i]+"</div>");
+	}
+</script>
+</body>
+</html>
