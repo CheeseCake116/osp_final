@@ -1,11 +1,55 @@
 <html>
 <body>
-<script>
-	var count = {{count|tojson}};
-	var urlList = {{urlList|tojson}};
-	for(var i = 0; i < count; i++) {
-		document.write("<div>"+urlList[i]+"</div>");
-	}
-</script>
+
+	<style type="text/css">
+		table, tr, td{
+			border : 1px solid black;
+			text-align: left;
+		}
+
+	</style>
+
+	<script type="text/javascript">
+
+		function button1_click() {
+		alert("버튼을 누르셨습니다.");
+		}
+		var x=Number(count);
+		var y=5;
+		var num=1;
+		document.write("<table>");
+		for(i=0;i<x;i++)
+		{
+			document.write("<tr>");
+			for(j=0;j<y;j++)
+			{
+				if(j==0){
+					document.write("<td width='1000' text-align: left>");
+					document.write("&nbsp; URL"+num + " : ");
+					num++;
+				 } else if(j==1){
+					document.write("<td width='200'>");
+					document.write("&nbsp; 전체 단어수 : ");
+				 } else if(j==2){
+					document.write("<td width='200'>");
+					document.write("&nbsp; 처리시간 (초)");
+				 } else if(j==3){
+					document.write("<td>");
+					document.write("<input type='button' value='단어분석 버튼' onclick='button1_click()';>");
+				 } else if(j==4){
+					document.write("<td>");
+					document.write("<input type='button' value='유사도 분석 버튼' onclick='button1_click()';>");
+			      	 } 
+				
+			}
+			document.write("</tr>");
+		}
+		document.write("</table>");
+	</script>
+
+	<script>
+
+	</script>
+
 </body>
 </html>
