@@ -83,3 +83,6 @@ def info():
 
 		return render_template('fileurl.html', urlList=urlList, urlCount=urlCount, wordList=wordList, wordCount=wordCount)
 
+if __name__ == "__main__": 
+	webbrowser.open_new("http://127.0.0.1:5000/")
+	app.run(host='127.0.0.1', port='5000', debug=True)
