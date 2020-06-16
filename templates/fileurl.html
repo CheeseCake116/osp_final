@@ -11,64 +11,72 @@
 
 	<script type="text/javascript">
 
-		function button1_click() {
+		function button1_click(num) {
 
-		var url = "";
-            	var name = "_blank";
-            	var option = "width = 500, height = 500, top = 100, left = 200, location = no"
-            	var pop1 = window.open(url, name, option);
-		var a=Number(30);
-		var b=3;
-		var num=0;
+			var startTime = new Date().getTime();
 
-		pop1.document.write("<table border='1' bordercolor='blue' width='500' height='300' align='center'>");
-		for(i=0;i<a;i++)
-			{
-				pop1.document.write("<tr>");
-				for(j=0;j<b;j++)
-				{
-					if(j==0){
-						if(i==0){
-							pop1.document.write("<td width='500'>");
-							pop1.document.write("&nbsp;Word");
-						}else{
-							num++;
-							pop1.document.write("<td width='1000' text-align: left>");
-							pop1.document.write("Sample"+num);
-						}
-				 	} else if(j==1){
-						if(i==0){
-							pop1.document.write("<td width='500'>");
-							pop1.document.write("&nbsp;TF");
-						}else{
-							pop1.document.write("<td width='1000' text-align: left>");
-							pop1.document.write("TF value"+num);
-						}
-				 	} else if(j==2){
-						if(i==0){
-							pop1.document.write("<td width='500'>");
-							pop1.document.write("&nbsp;IDF");
-						}else{
-							pop1.document.write("<td width='1000' text-align: left>");
-							pop1.document.write("IDF value"+num);
-						}
-				 	}
+
+            		var option = "width = 500, height = 500, top = 100, left = 200, location = no"
+            		var pop1 = window.open("", "_blank", option);
+			var a=Number(30);
+			var b=3;
+			var n=0;
+
+			pop1.document.write("<table border='1' bordercolor='blue' width='500' height='300' align='center'>");
+			for(i=0;i<a;i++){
+					pop1.document.write("<tr>");
+					for(j=0;j<b;j++){
+						if(j==0){
+							if(i==0){
+								pop1.document.write("<td width='500'>");
+								pop1.document.write("&nbsp;Word");
+							}else{
+								n++;
+								pop1.document.write("<td width='1000' text-align: left>");
+								pop1.document.write("Sample"+n);
+							}
+				 		} else if(j==1){
+							if(i==0){
+								pop1.document.write("<td width='500'>");
+								pop1.document.write("&nbsp;TF");
+							}else{
+								pop1.document.write("<td width='1000' text-align: left>");
+								pop1.document.write("TF value"+n);
+							}
+				 		} else if(j==2){
+							if(i==0){
+								pop1.document.write("<td width='500'>");
+								pop1.document.write("&nbsp;IDF");
+							}else{
+								pop1.document.write("<td width='1000' text-align: left>");
+								pop1.document.write("IDF value"+n);
+							}
+				 		}
 				
-				}
+					}
 					pop1.document.write("</tr>");
-			}
-		pop1.document.write("</table>");
+				}
+			pop1.document.write("</table>");
+
+			var endTime = new Date().getTime();
+		
+			t[n] = Number(endTime - startTime);
+			t[n] = t[n] / 1000;
+			var text = String(num);
+		
+			document.getElementById(text).innerHTML = "처리시간 " + t[n] + " (초)";
 		}
 
-		function button2_click() {
-			var url = "";
-            		var name = "_blank";
+		function button2_click(num) {
+
+			var startTime = new Date().getTime();
+
             		var option = "width = 500, height = 500, top = 100, left = 200, location = no"
-            		var pop2 = window.open(url, name, option);
+            		var pop2 = window.open("", "_blank", option);
 			
 			var x=Number(30);
 			var y=1;
-			var num=0;
+			var n=0;
 			pop2.document.write("<table border='1' bordercolor='blue' width='500' height='300' align='center'>");
 			for(i=0;i<x;i++)
 				{
@@ -77,13 +85,21 @@
 						pop2.document.write("<td width='500'>");
 						pop2.document.write("&nbsp;Top3 Similar URL list");
 					} else{
-						num++;
+						n++;
 						pop2.document.write("<td width='1000' text-align: left>");
-						pop2.document.write("Sample URL"+num);
+						pop2.document.write("Sample URL"+n);
 					}				
 					pop2.document.write("</tr>");
 				}
 			pop2.document.write("</table>");
+			
+			var endTime = new Date().getTime();
+		
+			t[n] = Number(endTime - startTime);
+			t[n] = t[n] / 1000;
+			var text = String(num);
+
+			document.getElementById(text).innerHTML = "처리시간 " + t[n] + " (초)";
 		}
 			
 
@@ -93,26 +109,28 @@
 		var wordCount=({{wordCount|tojson}});
 		var y=5;
 		var num=1;
+		var t = new Array(x);
 		document.write("<table>");
 		for(i=0;i<x;i++)
 		{
+			t[i] = 0;
 			document.write("<tr>");
 			document.write("<td width='1000' text-align: left>");
 			document.write("&nbsp; URL"+num +" : " + urlList[i]);
-			num++;
 
 			document.write("<td width='200'>");
 			document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
 
 			document.write("<td width='200'>");
-			document.write("&nbsp; 처리시간 (초)");
+			document.write("<span id="+ num +"> 처리시간 " + t[i] +" (초)");
 
 			document.write("<td>");
-			document.write("<input type='button' value='단어분석 버튼' onclick='button1_click()';>");
+			document.write("<input type='button' value='단어분석 버튼' onclick='button1_click("+ num +")'>");
 
 			document.write("<td>");
-			document.write("<input type='button' value='유사도 분석 버튼' onclick='button2_click()';>");
+			document.write("<input type='button' value='유사도 분석 버튼' onclick='button2_click("+ num +")'>");
 			document.write("</tr>");
+			num++;
 		}
 		document.write("</table>");
 	</script>
