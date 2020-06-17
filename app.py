@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 import re
 import requests
 from bs4 import BeautifulSoup
+import webbrowser
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
