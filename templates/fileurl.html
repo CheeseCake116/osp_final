@@ -11,36 +11,23 @@
 
 	<script type="text/javascript">
 
-		function button1_click(urlCount, TF) {
+		function button1_click(wordList) {
 
-            		var option = "width = 1000, height = 500, top = 100, left = 200, location = no"
+            		var option = "width = 600, height = 350, top = 100, left = 200, location = no"
             		var pop1 = window.open("", "_blank", option);
-			var count=Number(urlCount);
 
 			pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
 
 			pop1.document.write("<tr>");
-			pop1.document.write("<td width='500' align='center'>");
-			pop1.document.write("&nbsp;Word");
-
-			pop1.document.write("<td width='250' align='center'>");
-			pop1.document.write("&nbsp;TF");
-
-			pop1.document.write("<td width='250' align='center'>");
-			pop1.document.write("&nbsp;IDF");
+			pop1.document.write("<td width='50' align='center'>순위</td>");
+			pop1.document.write("<td width='500' align='center'>자주 등장한 단어</td>");
 			pop1.document.write("</tr>");
 
-			for(i=1;i<=count;i++)
+			for(i=1;i<=10;i++)
 			{
 				pop1.document.write("<tr>");
-				pop1.document.write("<td text-align:left>");
-				pop1.document.write("Sample"+i);
-
-				pop1.document.write("<td text-align:left>");
-				pop1.document.write("TF value"+i+":"+TF[i-1]);
-
-				pop1.document.write("<td text-align:left>");
-				pop1.document.write("IDF value"+i);
+				pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+i+"</td>");
+				pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+wordList[i-1][0]+"</td>");
 				pop1.document.write("</tr>");
 			}
 			pop1.document.write("</table>");
@@ -77,24 +64,24 @@
 		var wordCount=({{info['wordCount']|tojson}});
 		var analType=({{info['analType']|tojson}});
 		var delayTime=({{info['delayTime']|tojson}});
-		var TF;
+		var wordList;
 
 		document.write("<table>");
 		for(i=0;i<urlCount;i++)
 		{
 			document.write("<tr>");
-			document.write("<td width='1000' text-align: left>");
+			document.write("<td width='900' text-align: left>");
 			document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
 
 			document.write("<td width='200'>");
 			document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
 
-			document.write("<td width='200'>");
+			document.write("<td width='300'>");
 			document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
 
 			document.write("<td>");
 			document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
-			document.write("<input type='submit' value='단어분석 버튼'>");
+			document.write("<input type='submit' value='단어분석 버튼'></form>");
 
 			document.write("<td>");
 			document.write("<input type='button' value='유사도 분석 버튼'>");
@@ -103,8 +90,8 @@
 		document.write("</table>");
 
 		if (analType=='word'){
-			TF=({{info['TF']|tojson}});
-			button1_click(urlCount, TF);
+			wordList=({{info['wordList']|tojson}});
+			button1_click(wordList);
 		}
 	</script>
 

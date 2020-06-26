@@ -7,6 +7,8 @@ import requests
 from bs4 import BeautifulSoup
 import webbrowser
 import sys
+import operator
+import time
 from elasticsearch import Elasticsearch
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -25,29 +27,8 @@ for sw in stopwords.words("english"):
 
 
 def hfilter(s):
-	s = re.sub('[,:;0-9=<>%ㆍ]','',s)
-	s = s.replace('.', '')
-	s = s.replace('(', '')
-	s = s.replace(')', '')
-	s = s.replace('!', '')
-	s = s.replace('?', '')
-	s = s.replace('+', '')
-	s = s.replace('"', '')
-	s = s.replace("'", '')
-	s = s.replace("‘", '')
-	s = s.replace('*', '')
-	s = s.replace('+', '')
-	s = s.replace('-', '')
-	s = s.replace('–', '')
-	s = s.replace('/', '')
-	s = s.replace('[', '')
-	s = s.replace(']', '')
-	s = s.replace('“', '')
-	s = s.replace('”', '')
-	s = s.replace('~', '')
-	s = s.replace('#', '')
-	s = s.replace('@', '')
-	s = s.replace('™', '')
+	s = re.sub('[^a-zA-Z]',' ',s)
+	s = s.lower()
 	return s
 
 @app.route('/', )
@@ -98,45 +79,82 @@ def info():
 					if word not in wordList[i]:
 						wordList[i][word] = 0
 					wordList[i][word] += 1
-					count += 1
 
 			delList=[]
 			for word in wordList[i]:
 				if word in swlist:
 					delList.append(word)
+				else:
+					count += wordList[i][word]
 			for word in delList:
 				del(wordList[i][word]) # save only useful words in Elasticsearch
 
 			wordCount.append(count)
 			delayTime.append('NULL')
-		e1 = {
-			"urlList":urlList,
-			"wordList":wordList,
-			"wordCount":wordCount,
-			"delayTime":delayTime,
-		}
-		
-		es.indices.delete(index='words', ignore=[400,404])
-		es.index(index='words', doc_type='word', id=1, body=e1)
 
-		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'NULL', 'delayTime':delayTime, 'TF':TF}
+		es.indices.delete(index='words', ignore=[400,404])
+
+		eList = []
+		es.index(index='words', doc_type='word', id=0, body={"urlList":urlList,})
+		for i in range(0,urlCount):
+			eList.append({
+				"wordList":wordList[i],
+				"wordCount":wordCount[i],
+				"delayTime":delayTime[i],
+			})
+			es.index(index='words', doc_type='word', id=i+1, body=eList[i])
+
+		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'NULL', 'delayTime':delayTime, 'TF':TF, 'wordList':'NULL'}
 
 		return render_template('fileurl.html', info=info)
 
-@app.route('/info/<kind>/<num>', methods=['GET'])
-def analysis(kind, num):
+@app.route('/info/<kind>/<tnum>', methods=['GET'])
+def analysis(kind, tnum):
 	body ={"query":{"match_all":{}}}
+	num = int(tnum)-1
 	if (kind == "word"):
-		data=es.get(index='words', doc_type='word', id=1)['_source']
+		data=es.get(index='words', doc_type='word', id=0)['_source']
 		urlList=data['urlList']
 		urlCount=len(urlList)
-		wordCount=data['wordCount']
-		delayTime=data['delayTime']
-
-		TF=[]
+		wordCount = []
+		wordList = []
+		delayTime = []
 		for i in range(0,urlCount):
-			TF.append("TF "+str(i)+"번값")
-		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'word', 'delayTime':delayTime, 'TF':TF}
+			data=es.get(index='words', doc_type='word', id=i+1)['_source']
+			wordCount.append(data['wordCount'])
+			wordList.append(data['wordList'])
+			delayTime.append(data['delayTime'])
+
+		keys = list(wordList[num].keys())
+		TF=list(wordList[num].values())
+		IDF=[]
+		TF_IDF=[]
+		start = time.time()
+		for word in wordList[num]:
+			count = 0
+			for wl in wordList:
+				if word in wl:
+					count+=1
+			IDF.append(urlCount/count)
+
+		for i in range(0,len(TF)):
+			TF_IDF.append(TF[i] * IDF[i])
+		end = time.time()
+		delay = round(end-start, 6)
+		delayTime[num] = delay
+
+		e1 = {
+			"wordList":wordList[num],
+			"wordCount":wordCount[num],
+			"delayTime":delay,
+		}
+		es.index(index='words', doc_type='word', id=num+1, body=e1) #update delayTime
+		
+		wordDic = dict(zip(keys, TF_IDF)).items()
+		wordDic = sorted(wordDic, key=operator.itemgetter(1))
+		wordDic.reverse()
+
+		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'word', 'delayTime':delayTime, 'wordList':wordDic[0:10]}
 
 		return render_template('fileurl.html', info=info)
 		
