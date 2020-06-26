@@ -104,7 +104,7 @@ def info():
 			})
 			es.index(index='words', doc_type='word', id=i+1, body=eList[i])
 
-		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'NULL', 'delayTime':delayTime, 'TF':TF, 'wordList':'NULL'}
+		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'NULL', 'delayTime':delayTime, 'TF':TF, 'wordList':'NULL', 'similList':'NULL'}
 
 		return render_template('fileurl.html', info=info)
 
@@ -112,7 +112,7 @@ def info():
 def analysis(kind, tnum):
 	body ={"query":{"match_all":{}}}
 	num = int(tnum)-1
-	if (kind == "word"):
+	if (kind != "NULL"):
 		data=es.get(index='words', doc_type='word', id=0)['_source']
 		urlList=data['urlList']
 		urlCount=len(urlList)
@@ -125,39 +125,42 @@ def analysis(kind, tnum):
 			wordList.append(data['wordList'])
 			delayTime.append(data['delayTime'])
 
-		keys = list(wordList[num].keys())
-		TF=list(wordList[num].values())
-		IDF=[]
-		TF_IDF=[]
-		start = time.time()
-		for word in wordList[num]:
-			count = 0
-			for wl in wordList:
-				if word in wl:
-					count+=1
-			IDF.append(urlCount/count)
+		if (kind == "word"):
+			keys = list(wordList[num].keys())
+			TF=list(wordList[num].values())
+			IDF=[]
+			TF_IDF=[]
+			start = time.time()
+			for word in wordList[num]:
+				count = 0
+				for wl in wordList:
+					if word in wl:
+						count+=1
+				IDF.append(urlCount/count)
+	
+			for i in range(0,len(TF)):
+				TF_IDF.append(TF[i] * IDF[i])
+			end = time.time()
+			delay = round(end-start, 6)
+			delayTime[num] = delay
 
-		for i in range(0,len(TF)):
-			TF_IDF.append(TF[i] * IDF[i])
-		end = time.time()
-		delay = round(end-start, 6)
-		delayTime[num] = delay
-
-		e1 = {
-			"wordList":wordList[num],
-			"wordCount":wordCount[num],
-			"delayTime":delay,
-		}
-		es.index(index='words', doc_type='word', id=num+1, body=e1) #update delayTime
+			e1 = {
+				"wordList":wordList[num],
+				"wordCount":wordCount[num],
+				"delayTime":delay,
+			}
+			es.index(index='words', doc_type='word', id=num+1, body=e1) #update delayTime
 		
-		wordDic = dict(zip(keys, TF_IDF)).items()
-		wordDic = sorted(wordDic, key=operator.itemgetter(1))
-		wordDic.reverse()
+			wordDic = dict(zip(keys, TF_IDF)).items()
+			wordDic = sorted(wordDic, key=operator.itemgetter(1))
+			wordDic.reverse()
 
-		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'word', 'delayTime':delayTime, 'wordList':wordDic[0:10]}
+			info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'word', 'delayTime':delayTime, 'wordList':wordDic[0:10], 'similList':'NULL'}
+
+		elif (kind == "simil"):
+			info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'simil', 'delayTime':delayTime, 'wordList':'NULL', 'similList':urlList[0:3]}
 
 		return render_template('fileurl.html', info=info)
-		
 
 if __name__ == "__main__": 
 	webbrowser.open_new("http://127.0.0.1:5000/")

@@ -33,30 +33,26 @@
 			pop1.document.write("</table>");
 		}
 
-		function button2_click() {
-			var url = "";
-            		var name = "_blank";
-            		var option = "width = 500, height = 500, top = 100, left = 200, location = no"
-            		var pop2 = window.open(url, name, option);
-			
-			var x=Number(30);
-			var y=1;
-			var num=0;
-			pop2.document.write("<table border='1' bordercolor='blue' width='500' height='300' align='center'>");
-			for(i=0;i<x;i++)
-				{
-					pop2.document.write("<tr>");
-					if(i==0){
-						pop2.document.write("<td width='500'>");
-						pop2.document.write("&nbsp;Top3 Similar URL list");
-					} else{
-						num++;
-						pop2.document.write("<td width='1000' text-align: left>");
-						pop2.document.write("Sample URL"+num);
-					}				
-					pop2.document.write("</tr>");
-				}
-			pop2.document.write("</table>");
+		function button2_click(similList) {
+
+            		var option = "width = 600, height = 350, top = 100, left = 200, location = no"
+            		var pop1 = window.open("", "_blank", option);
+
+			pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
+
+			pop1.document.write("<tr>");
+			pop1.document.write("<td width='50' align='center'>순위</td>");
+			pop1.document.write("<td width='500' align='center'>현재 url과 유사한 페이지</td>");
+			pop1.document.write("</tr>");
+
+			for(i=1;i<=3;i++)
+			{
+				pop1.document.write("<tr>");
+				pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+i+"</td>");
+				pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+similList[i-1]+"</td>");
+				pop1.document.write("</tr>");
+			}
+			pop1.document.write("</table>");
 		}
 
 		var urlList={{info['urlList']|tojson}};
@@ -65,6 +61,7 @@
 		var analType=({{info['analType']|tojson}});
 		var delayTime=({{info['delayTime']|tojson}});
 		var wordList;
+		var similList;
 
 		document.write("<table>");
 		for(i=0;i<urlCount;i++)
@@ -72,19 +69,25 @@
 			document.write("<tr>");
 			document.write("<td width='900' text-align: left>");
 			document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
+			document.write("</td>");
 
 			document.write("<td width='200'>");
 			document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
+			document.write("</td>");
 
 			document.write("<td width='300'>");
 			document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
+			document.write("</td>");
 
 			document.write("<td>");
 			document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
 			document.write("<input type='submit' value='단어분석 버튼'></form>");
+			document.write("</td>");
 
 			document.write("<td>");
-			document.write("<input type='button' value='유사도 분석 버튼'>");
+			document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
+			document.write("<input type='submit' value='유사도분석 버튼'></form>");
+			document.write("</td>");
 			document.write("</tr>");
 		}
 		document.write("</table>");
@@ -92,6 +95,10 @@
 		if (analType=='word'){
 			wordList=({{info['wordList']|tojson}});
 			button1_click(wordList);
+		}
+		else if (analType=='simil'){
+			similList=({{info['similList']|tojson}});
+			button2_click(similList);
 		}
 	</script>
 
