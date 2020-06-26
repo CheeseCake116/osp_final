@@ -1,2 +1,12 @@
 http://cloudstack.apache.org/
 http://couchdb.apache.org/
+http://cloudstack.apache.org/
+http://couchdb.apache.org/
+http://helix.apache.org/
+http://stratos.apache.org/
+http://vcl.apache.org/
+http://empire-db.apache.org/
+http://zookeeper.apache.org/
+http://datafu.apache.org/
+http://drill.apache.org/
+http://fluo.apache.org/
