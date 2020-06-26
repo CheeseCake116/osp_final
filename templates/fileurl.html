@@ -11,53 +11,41 @@
 
 	<script type="text/javascript">
 
-		function button1_click() {
+		function button1_click(urlCount, TF) {
 
-		var url = "";
-            	var name = "_blank";
-            	var option = "width = 500, height = 500, top = 100, left = 200, location = no"
-            	var pop1 = window.open(url, name, option);
-		var a=Number(30);
-		var b=3;
-		var num=0;
+			var url = "";
+            		var name = "_blank";
+            		var option = "width = 600, height = 500, top = 100, left = 200, location = no"
+            		var pop1 = window.open(url, name, option);
+			var count=Number(urlCount);
 
-		pop1.document.write("<table border='1' bordercolor='blue' width='500' height='300' align='center'>");
-		for(i=0;i<a;i++)
+			pop1.document.write("<table border='1' bordercolor='blue' width='500' align='center'>");
+
+			pop1.document.write("<tr>");
+			pop1.document.write("<td width='500' align='center'>");
+			pop1.document.write("&nbsp;Word");
+
+			pop1.document.write("<td width='500' align='center'>");
+			pop1.document.write("&nbsp;TF");
+
+			pop1.document.write("<td width='500' align='center'>");
+			pop1.document.write("&nbsp;IDF");
+			pop1.document.write("</tr>");
+
+			for(i=1;i<=count;i++)
 			{
 				pop1.document.write("<tr>");
-				for(j=0;j<b;j++)
-				{
-					if(j==0){
-						if(i==0){
-							pop1.document.write("<td width='500'>");
-							pop1.document.write("&nbsp;Word");
-						}else{
-							num++;
-							pop1.document.write("<td width='1000' text-align: left>");
-							pop1.document.write("Sample"+num);
-						}
-				 	} else if(j==1){
-						if(i==0){
-							pop1.document.write("<td width='500'>");
-							pop1.document.write("&nbsp;TF");
-						}else{
-							pop1.document.write("<td width='1000' text-align: left>");
-							pop1.document.write("TF value"+num);
-						}
-				 	} else if(j==2){
-						if(i==0){
-							pop1.document.write("<td width='500'>");
-							pop1.document.write("&nbsp;IDF");
-						}else{
-							pop1.document.write("<td width='1000' text-align: left>");
-							pop1.document.write("IDF value"+num);
-						}
-				 	}
-				
-				}
-					pop1.document.write("</tr>");
+				pop1.document.write("<td text-align:left>");
+				pop1.document.write("Sample"+i);
+
+				pop1.document.write("<td text-align:left>");
+				pop1.document.write("TF value"+i+":"+TF[i-1]);
+
+				pop1.document.write("<td text-align:left>");
+				pop1.document.write("IDF value"+i);
+				pop1.document.write("</tr>");
 			}
-		pop1.document.write("</table>");
+			pop1.document.write("</table>");
 		}
 
 		function button2_click() {
@@ -85,36 +73,41 @@
 				}
 			pop2.document.write("</table>");
 		}
-			
 
-		var urlList={{urlList|tojson}};
-		var x=Number({{urlCount|tojson}});
-		var wordList={{wordList|tojson}};
-		var wordCount=({{wordCount|tojson}});
-		var y=5;
-		var num=1;
+		var urlList={{info['urlList']|tojson}};
+		var urlCount=Number({{info['urlCount']|tojson}});
+		var wordCount=({{info['wordCount']|tojson}});
+		var analType=({{info['analType']|tojson}});
+		var delayTime=({{info['delayTime']|tojson}});
+		var TF;
+
 		document.write("<table>");
-		for(i=0;i<x;i++)
+		for(i=0;i<urlCount;i++)
 		{
 			document.write("<tr>");
 			document.write("<td width='1000' text-align: left>");
-			document.write("&nbsp; URL"+num +" : " + urlList[i]);
-			num++;
+			document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
 
 			document.write("<td width='200'>");
 			document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
 
 			document.write("<td width='200'>");
-			document.write("&nbsp; 처리시간 (초)");
+			document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
 
 			document.write("<td>");
-			document.write("<input type='button' value='단어분석 버튼' onclick='button1_click()';>");
+			document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
+			document.write("<input type='submit' value='단어분석 버튼'>");
 
 			document.write("<td>");
 			document.write("<input type='button' value='유사도 분석 버튼' onclick='button2_click()';>");
 			document.write("</tr>");
 		}
 		document.write("</table>");
+
+		if (analType=='word'){
+			TF=({{info['TF']|tojson}});
+			button1_click(urlCount, TF);
+		}
 	</script>
 
 </body>
