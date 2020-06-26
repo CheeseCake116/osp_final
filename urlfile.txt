@@ -1,7 +1,5 @@
 http://cloudstack.apache.org/
 http://couchdb.apache.org/
-http://cloudstack.apache.org/
-http://couchdb.apache.org/
 http://helix.apache.org/
 http://stratos.apache.org/
 http://vcl.apache.org/
