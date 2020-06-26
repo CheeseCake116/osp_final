@@ -7,3 +7,4 @@ http://empire-db.apache.org/
 http://zookeeper.apache.org/
 http://datafu.apache.org/
 http://drill.apache.org/
+http://fluo.apache.org/
