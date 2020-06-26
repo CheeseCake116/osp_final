@@ -13,22 +13,22 @@
 
 		function button1_click(urlCount, TF) {
 
-			var url = "";
-            		var name = "_blank";
-            		var option = "width = 600, height = 500, top = 100, left = 200, location = no"
-            		var pop1 = window.open(url, name, option);
+			var startTime = new Date().getTime();
+
+            		var option = "width = 1000, height = 500, top = 100, left = 200, location = no"
+            		var pop1 = window.open("", "_blank", option);
 			var count=Number(urlCount);
 
-			pop1.document.write("<table border='1' bordercolor='blue' width='500' align='center'>");
+			pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
 
 			pop1.document.write("<tr>");
 			pop1.document.write("<td width='500' align='center'>");
 			pop1.document.write("&nbsp;Word");
 
-			pop1.document.write("<td width='500' align='center'>");
+			pop1.document.write("<td width='250' align='center'>");
 			pop1.document.write("&nbsp;TF");
 
-			pop1.document.write("<td width='500' align='center'>");
+			pop1.document.write("<td width='250' align='center'>");
 			pop1.document.write("&nbsp;IDF");
 			pop1.document.write("</tr>");
 
@@ -48,15 +48,16 @@
 			pop1.document.write("</table>");
 		}
 
-		function button2_click() {
-			var url = "";
-            		var name = "_blank";
+		function button2_click(num) {
+
+			var startTime = new Date().getTime();
+
             		var option = "width = 500, height = 500, top = 100, left = 200, location = no"
-            		var pop2 = window.open(url, name, option);
+            		var pop2 = window.open("", "_blank", option);
 			
 			var x=Number(30);
 			var y=1;
-			var num=0;
+			var n=0;
 			pop2.document.write("<table border='1' bordercolor='blue' width='500' height='300' align='center'>");
 			for(i=0;i<x;i++)
 				{
@@ -65,13 +66,20 @@
 						pop2.document.write("<td width='500'>");
 						pop2.document.write("&nbsp;Top3 Similar URL list");
 					} else{
-						num++;
+						n++;
 						pop2.document.write("<td width='1000' text-align: left>");
-						pop2.document.write("Sample URL"+num);
+						pop2.document.write("Sample URL"+n);
 					}				
 					pop2.document.write("</tr>");
 				}
 			pop2.document.write("</table>");
+			
+			var endTime = new Date().getTime();
+		
+			t[n] = Number(endTime - startTime);
+			t[n] = t[n] / 1000;
+			var text = String(num);
+			document.getElementById(text).innerHTML = "처리시간 " + t[n] + " (초)";
 		}
 
 		var urlList={{info['urlList']|tojson}};
@@ -80,10 +88,12 @@
 		var analType=({{info['analType']|tojson}});
 		var delayTime=({{info['delayTime']|tojson}});
 		var TF;
+		var t = new Array(x);
 
 		document.write("<table>");
 		for(i=0;i<urlCount;i++)
 		{
+			t[i] = 0;
 			document.write("<tr>");
 			document.write("<td width='1000' text-align: left>");
 			document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
@@ -92,6 +102,7 @@
 			document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
 
 			document.write("<td width='200'>");
+			document.write("<span id="+ num +"> 처리시간 " + t[i] +" (초)");
 			document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
 
 			document.write("<td>");
@@ -99,8 +110,9 @@
 			document.write("<input type='submit' value='단어분석 버튼'>");
 
 			document.write("<td>");
-			document.write("<input type='button' value='유사도 분석 버튼' onclick='button2_click()';>");
+			document.write("<input type='button' value='유사도 분석 버튼' onclick='button2_click("+ num +")'>");
 			document.write("</tr>");
+			num++;
 		}
 		document.write("</table>");
 
