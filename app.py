@@ -49,7 +49,6 @@ def info():
 		filepath = "uploads/"+filename
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-
 		txt = open(filepath, "r") # open txt file and read
 		urlList = []
 		while True:
@@ -73,6 +72,7 @@ def info():
 		count = 0
 		temp=[]
 		req = requests.get(urlList[i])
+		print(req.status_code)
 		html = req.text
 		soup = BeautifulSoup(html, 'html.parser')
 		lines = soup.find_all('p')
