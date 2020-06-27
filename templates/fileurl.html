@@ -2,11 +2,32 @@
 <body>
 
 	<style type="text/css">
+		tab{
+			padding-left : 6em;
+		}
+		tab2{
+			padding-left : 5em;
+		}
+		body{
+			background-color : #EDEEF0;
+		}
+		div{
+			text-align:center;
+		}
 		table, tr, td{
-			border : 1px solid black;
+			border : 3px solid #EDEEF0;
+			border-radius : 10px;
 			text-align: left;
 		}
+		.even {
+			background-color : #909FA6;
+		}
+		td{
+			background-color : #D1DFE8;
+			border-radius : 10px;
+		}
 		.vcenter{
+			border-radius :10px;
 			vertical-align:bottom;
 		}
 		
@@ -142,15 +163,17 @@
 
 
 		var analType={{info['analType']|tojson}};
-
+		
+		document.write("<div>");
 		document.write("<form method='POST' action='/info'>");
 		document.write("Name <input name='url' type='text'>");
-		document.write("<button type='submit' val='name'> Submit </button><br/>");
+		document.write("<tab><button type='submit' val='name'> Submit </button></tab><br/>");
 		document.write("</form>");
 		document.write("<form method='POST' action='/info' encType='multipart/form-data'>");
 		document.write("File <input name='file' type='file'>");
-		document.write("<button type='submit' val='file'> Submit </button>");
+		document.write("<tab2><button type='submit' val='file'> Submit </button></tab2>");
 		document.write("</form><br/>");
+		document.write("</div>");
 
 		if (analType != 'init'){
 
@@ -167,29 +190,58 @@
 			document.write("<table wieth='100%'>");
 			for(i=0;i<urlCount;i++)
 			{
-				document.write("<tr>");
-				document.write("<td width='900' text-align: left>");
-				document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
-				document.write("</td>");
+				if( (i % 2) == 1){
+					document.write("<tr>");
+					document.write("<td class='even' width='900' text-align: left>");
+					document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
+					document.write("</td>");
+	
+					document.write("<td class='even' width='200'>");
+					document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
+					document.write("</td>");
 
-				document.write("<td width='200'>");
-				document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
-				document.write("</td>");
+					document.write("<td class='even' width='300'>");
+					document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
+					document.write("</td>");
 
-				document.write("<td width='300'>");
-				document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
-				document.write("</td>");
+					document.write("<td class='even' style='vertical-align:bottom' height='74'>");
+					document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
+					document.write("<input type='submit' value='단어분석 버튼'></form>");
+					document.write("</td>");
 
-				document.write("<td class='vcenter' height='74'>");
-				document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
-				document.write("<input type='submit' value='단어분석 버튼'>ABC</form>");
-				document.write("</td>");
+					document.write("<td class='even' style='vertical-align:bottom' height='74'>");
+					document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
+					document.write("<input type='submit' value='유사도분석 버튼'></form>");
+					document.write("</td>");
+					document.write("</tr>");
+				}
+	
+				else {
+					document.write("<tr>");
+					document.write("<td width='900' text-align: left>");
+					document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
+					document.write("</td>");
 
-				document.write("<td class='vcenter' height='74'>");
-				document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
-				document.write("<input type='submit' value='유사도분석 버튼'></form>");
-				document.write("</td>");
-				document.write("</tr>");
+					document.write("<td width='200'>");
+					document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
+					document.write("</td>");
+
+					document.write("<td width='300'>");
+					document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
+					document.write("</td>");
+
+					document.write("<td class='vcenter' height='74'>");
+					document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
+					document.write("<input type='submit' value='단어분석 버튼'></form>");
+					document.write("</td>");
+
+					document.write("<td class='vcenter' height='74'>");
+					document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
+					document.write("<input type='submit' value='유사도분석 버튼'></form>");
+					document.write("</td>");
+					document.write("</tr>");
+				}
+
 			}
 			document.write("</table>");
 			document.write("</p>");
