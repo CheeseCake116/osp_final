@@ -6,6 +6,9 @@
 			border : 1px solid black;
 			text-align: left;
 		}
+		.vcenter{
+			vertical-align:bottom;
+		}
 
 	</style>
 
@@ -138,12 +141,12 @@
 				document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
 				document.write("</td>");
 
-				document.write("<td width='300'>");
+				document.write("<td class='vcenter' height='74'>");
 				document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
 				document.write("<input type='submit' value='단어분석 버튼'>ABC</form>");
 				document.write("</td>");
 
-				document.write("<td>");
+				document.write("<td class='vcenter' height='74'>");
 				document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
 				document.write("<input type='submit' value='유사도분석 버튼'></form>");
 				document.write("</td>");
