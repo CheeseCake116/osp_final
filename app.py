@@ -34,7 +34,19 @@ def hfilter(s):
 
 @app.route('/', )
 def index():
-	return render_template('home.html')
+	info = {
+		'statusList':'NULL',
+		'urlList':'NULL',
+		'urlCount':'NULL',
+		'failData':'NULL',
+		'wordCount':'NULL',
+		'analType':'init',
+		'delayTime':'NULL',
+		'wordList':'NULL',
+		'similList':'NULL'
+	}
+	
+	return render_template('fileurl.html', info=info)
 
 @app.route('/info', methods=['POST'])
 def info():
@@ -67,6 +79,7 @@ def info():
 	wordCount=[]
 	delayTime=[]
 	statusList=[]
+	failIndex=[]
 	TF=[]
 	for i in range(0,urlCount): #count the number of words
 		wordList.append({})
@@ -74,6 +87,7 @@ def info():
 		temp=[]
 
 		if urlList[i] in urlList[0:i]:
+			failIndex.append(i)
 			statusList.append('rep')
 			wordCount.append(0)
 			delayTime.append('NULL')
@@ -82,8 +96,8 @@ def info():
 		req = requests.get(urlList[i])
 
 		statusList.append(req.status_code)
-		print(req.status_code)
 		if (req.status_code != 200):
+			failIndex.append(i)
 			wordCount.append(0)
 			delayTime.append('NULL')
 			continue
@@ -110,6 +124,24 @@ def info():
 		wordCount.append(count)
 		delayTime.append('NULL')
 	
+	failIndex.reverse()
+	failCount=len(failIndex)
+	failList=[]
+	failCode=[]
+	for i in failIndex:
+		failList.append(urlList.pop(i))
+		failCode.append(statusList.pop(i))
+		urlCount -= 1
+
+	failList.reverse()
+	failCode.reverse()
+
+	failData = {
+		'failList':failList,
+		'failCode':failCode,
+		'failCount':failCount
+	}
+
 	es.indices.delete(index='words', ignore=[400,404])
 
 	eList = []
@@ -126,6 +158,7 @@ def info():
 		'statusList':statusList,
 		'urlList':urlList,
 		'urlCount':urlCount,
+		'failData':failData,
 		'wordCount':wordCount,
 		'analType':'NULL',
 		'delayTime':delayTime,
@@ -186,6 +219,7 @@ def analysis(kind, tnum):
 				'statusList':'NULL',
 				'urlList':urlList,
 				'urlCount':urlCount,
+				'failData':'NULL',
 				'wordCount':wordCount,
 				'analType':'word',
 				'delayTime':delayTime,
@@ -240,6 +274,7 @@ def analysis(kind, tnum):
 				'statusList':'NULL',
 				'urlList':urlList,
 				'urlCount':urlCount,
+				'failData':'NULL',
 				'wordCount':wordCount,
 				'analType':'simil',
 				'delayTime':delayTime,

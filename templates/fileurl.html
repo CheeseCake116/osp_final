@@ -11,10 +11,14 @@
 
 	<script type="text/javascript">
 
-		function init(statusList, urlList, urlCount) {
+		function init(statusList, urlList, urlCount, failData) {
 
             		var option = "width = 650, height = 350, top = 100, left = 200, location = no"
             		var pop1 = window.open("", "_blank", option);
+			var failList = failData['failList'];
+			var failCode = failData['failCode'];
+			var failCount = failData['failCount'];
+			
 
 			pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
 
@@ -26,16 +30,20 @@
 			for(i=0;i<urlCount;i++)
 			{
 				pop1.document.write("<tr>");
-				if (statusList[i] == 200){
-					pop1.document.write("<td align='center'><span style='color:green'>성공</span></td>");
-				}
-				else if (statusList[i] == 'rep'){
+				pop1.document.write("<td align='center'><span style='color:green'>성공</span></td>");
+				pop1.document.write("<td>&nbsp;&nbsp;"+urlList[i]+"</td>");
+				pop1.document.write("</tr>");
+			}
+			for(i=0;i<failCount;i++)
+			{
+				pop1.document.write("<tr>");
+				if (failCode[i] == 'rep'){
 					pop1.document.write("<td align='center'><span style='color:orange'>중복</span></td>");
 				}
 				else{
 					pop1.document.write("<td align='center'><span style='color:red'>실패</span></td>");
 				}
-				pop1.document.write("<td>&nbsp;&nbsp;"+urlList[i]+"</td>");
+				pop1.document.write("<td>&nbsp;&nbsp;"+failList[i]+"</td>");
 				pop1.document.write("</tr>");
 			}
 			pop1.document.write("</table>");
@@ -85,55 +93,71 @@
 			pop1.document.write("</table>");
 		}
 
-		var urlList={{info['urlList']|tojson}};
-		var urlCount=Number({{info['urlCount']|tojson}});
-		var wordCount=({{info['wordCount']|tojson}});
+
 		var analType=({{info['analType']|tojson}});
-		var delayTime=({{info['delayTime']|tojson}});
-		var statusList;
-		var wordList;
-		var similList;
 
-		document.write("<table>");
-		for(i=0;i<urlCount;i++)
-		{
-			document.write("<tr>");
-			document.write("<td width='900' text-align: left>");
-			document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
-			document.write("</td>");
+		document.write("<form method='POST' action='/info'>");
+		document.write("Name <input name='url' type='text'>");
+		document.write("<button type='submit' val='name'> Submit </button><br/>");
+		document.write("</form>");
+		document.write("<form method='POST' action='/info' encType='multipart/form-data'>");
+		document.write("File <input name='file' type='file'>");
+		document.write("<button type='submit' val='file'> Submit </button>");
+		document.write("</form><br/>");
 
-			document.write("<td width='200'>");
-			document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
-			document.write("</td>");
+		if (analType != 'init'){
 
-			document.write("<td width='300'>");
-			document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
-			document.write("</td>");
+			var urlList={{info['urlList']|tojson}};
+			var urlCount=Number({{info['urlCount']|tojson}});
+			var wordCount=({{info['wordCount']|tojson}});
+			var delayTime=({{info['delayTime']|tojson}});
+			var statusList;
+			var failData;
+			var wordList;
+			var similList;
 
-			document.write("<td>");
-			document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
-			document.write("<input type='submit' value='단어분석 버튼'></form>");
-			document.write("</td>");
+			document.write("<table>");
+			for(i=0;i<urlCount;i++)
+			{
+				document.write("<tr>");
+				document.write("<td width='900' text-align: left>");
+				document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
+				document.write("</td>");
 
-			document.write("<td>");
-			document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
-			document.write("<input type='submit' value='유사도분석 버튼'></form>");
-			document.write("</td>");
-			document.write("</tr>");
-		}
-		document.write("</table>");
+				document.write("<td width='200'>");
+				document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
+				document.write("</td>");
 
-		if (analType=='NULL'){
-			statusList=({{info['statusList']|tojson}});
-			init(statusList, urlList, urlCount);
-		}
-		else if (analType=='word'){
-			wordList=({{info['wordList']|tojson}});
-			button1_click(wordList);
-		}
-		else if (analType=='simil'){
-			similList=({{info['similList']|tojson}});
-			button2_click(similList);
+				document.write("<td width='300'>");
+				document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
+				document.write("</td>");
+
+				document.write("<td>");
+				document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
+				document.write("<input type='submit' value='단어분석 버튼'></form>");
+				document.write("</td>");
+
+				document.write("<td>");
+				document.write("<form method='GET' action='/info/simil/"+(i+1)+"'>");
+				document.write("<input type='submit' value='유사도분석 버튼'></form>");
+				document.write("</td>");
+				document.write("</tr>");
+			}
+			document.write("</table>");
+		
+			if (analType=='NULL'){
+				statusList=({{info['statusList']|tojson}});
+				failData=({{info['failData']|tojson}});
+				init(statusList, urlList, urlCount, failData);
+			}
+			else if (analType=='word'){
+				wordList=({{info['wordList']|tojson}});
+				button1_click(wordList);
+			}
+			else if (analType=='simil'){
+				similList=({{info['similList']|tojson}});
+				button2_click(similList);
+			}
 		}
 	</script>
 
