@@ -9,6 +9,7 @@ import webbrowser
 import sys
 import operator
 import time
+import math
 from elasticsearch import Elasticsearch
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -104,7 +105,15 @@ def info():
 			})
 			es.index(index='words', doc_type='word', id=i+1, body=eList[i])
 
-		info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'NULL', 'delayTime':delayTime, 'TF':TF, 'wordList':'NULL', 'similList':'NULL'}
+		info = {
+			'urlList':urlList,
+			'urlCount':urlCount,
+			'wordCount':wordCount,
+			'analType':'NULL',
+			'delayTime':delayTime,
+			'wordList':'NULL',
+			'similList':'NULL'
+		}
 
 		return render_template('fileurl.html', info=info)
 
@@ -151,14 +160,72 @@ def analysis(kind, tnum):
 			}
 			es.index(index='words', doc_type='word', id=num+1, body=e1) #update delayTime
 		
-			wordDic = dict(zip(keys, TF_IDF)).items()
-			wordDic = sorted(wordDic, key=operator.itemgetter(1))
+			wordDic = list(zip(keys, TF_IDF)) # make keys and TF-IDF into list of tuple
+			wordDic = sorted(wordDic, key=operator.itemgetter(1)) # sort by TF-IDF
 			wordDic.reverse()
 
-			info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'word', 'delayTime':delayTime, 'wordList':wordDic[0:10], 'similList':'NULL'}
+			info = {
+				'urlList':urlList,
+				'urlCount':urlCount,
+				'wordCount':wordCount,
+				'analType':'word',
+				'delayTime':delayTime,
+				'wordList':wordDic[0:10],
+				'similList':'NULL'
+			}
 
 		elif (kind == "simil"):
-			info = {'urlList':urlList, 'urlCount':urlCount, 'wordCount':wordCount, 'analType':'simil', 'delayTime':delayTime, 'wordList':'NULL', 'similList':urlList[0:3]}
+			start = time.time()
+			cos = [] # cos = inner / (absA * absB)
+			absA = 0
+			for word in wordList[num]:
+				absA += pow(wordList[num][word],2) # get absA
+			absA = math.sqrt(absA)
+
+			inner = []
+			for i in range(0,urlCount):
+				cos.append(0)
+				inner.append(0)
+				if (i == num):
+					continue
+				
+				for word1 in wordList[num]:
+					absB = 0
+					for word2 in wordList[i]:
+						absB += pow(wordList[i][word2],2) # get absB
+					absB = math.sqrt(absB)
+
+					if word1 in wordList[i]:
+						inner[i] += wordList[num][word1] * wordList[i][word1] # get inner
+				cos[i] = inner[i] / (absA * absB)
+			urlList2 = urlList.copy()
+			urlList2[num] = '없음'
+			similList = list(zip(urlList2, cos))
+			similList = sorted(similList, key=operator.itemgetter(1))
+			similList.reverse()
+			for i in range(len(similList), 3): # append 'NULL' value until it's size becomes 3
+				similList.append(('없음',0))
+
+			end = time.time()
+			delay = round(end-start, 6)
+			delayTime[num] = delay
+
+			e1 = {
+				"wordList":wordList[num],
+				"wordCount":wordCount[num],
+				"delayTime":delay,
+			}
+			es.index(index='words', doc_type='word', id=num+1, body=e1) #update delayTime
+			
+			info = {
+				'urlList':urlList,
+				'urlCount':urlCount,
+				'wordCount':wordCount,
+				'analType':'simil',
+				'delayTime':delayTime,
+				'wordList':'NULL',
+				'similList':similList
+			}
 
 		return render_template('fileurl.html', info=info)
 
