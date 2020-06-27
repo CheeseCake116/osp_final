@@ -170,6 +170,7 @@ def info():
 
 @app.route('/info/<kind>/<tnum>', methods=['GET'])
 def analysis(kind, tnum):
+	
 	body ={"query":{"match_all":{}}}
 	num = int(tnum)-1
 	if (kind != "NULL"):

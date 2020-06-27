@@ -120,8 +120,9 @@
 			var failData;
 			var wordList;
 			var similList;
-
-			document.write("<table>");
+			
+			document.write("<p align-'center'>");
+			document.write("<table wieth='100%'>");
 			for(i=0;i<urlCount;i++)
 			{
 				document.write("<tr>");
@@ -137,9 +138,9 @@
 				document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
 				document.write("</td>");
 
-				document.write("<td>");
+				document.write("<td width='300'>");
 				document.write("<form method='GET' action='/info/word/"+(i+1)+"'>");
-				document.write("<input type='submit' value='단어분석 버튼'></form>");
+				document.write("<input type='submit' value='단어분석 버튼'>ABC</form>");
 				document.write("</td>");
 
 				document.write("<td>");
@@ -149,7 +150,8 @@
 				document.write("</tr>");
 			}
 			document.write("</table>");
-		
+			document.write("</p>");
+			
 			if (analType=='NULL'){
 				statusList={{info['statusList']|tojson}};
 				failData={{info['failData']|tojson}};
@@ -165,6 +167,5 @@
 			}
 		}
 	</script>
-
 </body>
 </html>
