@@ -99,7 +99,7 @@
 		}
 
 
-		var analType=({{info['analType']|tojson}});
+		var analType={{info['analType']|tojson}};
 
 		document.write("<form method='POST' action='/info'>");
 		document.write("Name <input name='url' type='text'>");
@@ -114,8 +114,8 @@
 
 			var urlList={{info['urlList']|tojson}};
 			var urlCount=Number({{info['urlCount']|tojson}});
-			var wordCount=({{info['wordCount']|tojson}});
-			var delayTime=({{info['delayTime']|tojson}});
+			var wordCount={{info['wordCount']|tojson}};
+			var delayTime={{info['delayTime']|tojson}};
 			var statusList;
 			var failData;
 			var wordList;
@@ -151,16 +151,16 @@
 			document.write("</table>");
 		
 			if (analType=='NULL'){
-				statusList=({{info['statusList']|tojson}});
-				failData=({{info['failData']|tojson}});
+				statusList={{info['statusList']|tojson}};
+				failData={{info['failData']|tojson}};
 				init(statusList, urlList, urlCount, failData);
 			}
 			else if (analType=='word'){
-				wordList=({{info['wordList']|tojson}});
+				wordList={{info['wordList']|tojson}};
 				button1_click(wordList);
 			}
 			else if (analType=='simil'){
-				similList=({{info['similList']|tojson}});
+				similList={{info['similList']|tojson}};
 				button2_click(similList);
 			}
 		}
