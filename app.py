@@ -39,7 +39,9 @@ def index():
 @app.route('/info', methods=['POST'])
 def info():
 	if 'url' in request.form: # get one url
-		return render_template('oneurl.html', url=request.form['url'])
+		urlList = []
+		urlList.append(request.form['url'])
+		urlCount = 1
 
 	elif 'file' in request.files: # get file and save as temp file
 		f = request.files['file']
@@ -62,60 +64,60 @@ def info():
 		if os.path.isfile(filepath):
 			os.remove(filepath)
 
-		wordList=[]
-		wordCount=[]
-		delayTime=[]
-		TF=[]
-		for i in range(0,urlCount): #count the number of words
-			wordList.append({})
-			count = 0
-			temp=[]
-			req = requests.get(urlList[i])
-			html = req.text
-			soup = BeautifulSoup(html, 'html.parser')
-			lines = soup.find_all('p')
+	wordList=[]
+	wordCount=[]
+	delayTime=[]
+	TF=[]
+	for i in range(0,urlCount): #count the number of words
+		wordList.append({})
+		count = 0
+		temp=[]
+		req = requests.get(urlList[i])
+		html = req.text
+		soup = BeautifulSoup(html, 'html.parser')
+		lines = soup.find_all('p')
 
-			for line in lines:
-				for word in hfilter(line.text).split():
-					if word not in wordList[i]:
-						wordList[i][word] = 0
-					wordList[i][word] += 1
+		for line in lines:
+			for word in hfilter(line.text).split():
+				if word not in wordList[i]:
+					wordList[i][word] = 0
+				wordList[i][word] += 1
 
-			delList=[]
-			for word in wordList[i]:
-				if word in swlist:
-					delList.append(word)
-				else:
-					count += wordList[i][word]
-			for word in delList:
-				del(wordList[i][word]) # save only useful words in Elasticsearch
+		delList=[]
+		for word in wordList[i]:
+			if word in swlist:
+				delList.append(word)
+			else:
+				count += wordList[i][word]
+		for word in delList:
+			del(wordList[i][word]) # save only useful words in Elasticsearch
 
-			wordCount.append(count)
-			delayTime.append('NULL')
+		wordCount.append(count)
+		delayTime.append('NULL')
 
-		es.indices.delete(index='words', ignore=[400,404])
+	es.indices.delete(index='words', ignore=[400,404])
 
-		eList = []
-		es.index(index='words', doc_type='word', id=0, body={"urlList":urlList,})
-		for i in range(0,urlCount):
-			eList.append({
-				"wordList":wordList[i],
-				"wordCount":wordCount[i],
-				"delayTime":delayTime[i],
-			})
-			es.index(index='words', doc_type='word', id=i+1, body=eList[i])
+	eList = []
+	es.index(index='words', doc_type='word', id=0, body={"urlList":urlList,})
+	for i in range(0,urlCount):
+		eList.append({
+			"wordList":wordList[i],
+			"wordCount":wordCount[i],
+			"delayTime":delayTime[i],
+		})
+		es.index(index='words', doc_type='word', id=i+1, body=eList[i])
 
-		info = {
-			'urlList':urlList,
-			'urlCount':urlCount,
-			'wordCount':wordCount,
-			'analType':'NULL',
-			'delayTime':delayTime,
-			'wordList':'NULL',
-			'similList':'NULL'
-		}
+	info = {
+		'urlList':urlList,
+		'urlCount':urlCount,
+		'wordCount':wordCount,
+		'analType':'NULL',
+		'delayTime':delayTime,
+		'wordList':'NULL',
+		'similList':'NULL'
+	}
 
-		return render_template('fileurl.html', info=info)
+	return render_template('fileurl.html', info=info)
 
 @app.route('/info/<kind>/<tnum>', methods=['GET'])
 def analysis(kind, tnum):
