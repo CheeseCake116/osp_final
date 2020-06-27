@@ -66,13 +66,28 @@ def info():
 	wordList=[]
 	wordCount=[]
 	delayTime=[]
+	statusList=[]
 	TF=[]
 	for i in range(0,urlCount): #count the number of words
 		wordList.append({})
 		count = 0
 		temp=[]
+
+		if urlList[i] in urlList[0:i]:
+			statusList.append('rep')
+			wordCount.append(0)
+			delayTime.append('NULL')
+			continue
+
 		req = requests.get(urlList[i])
+
+		statusList.append(req.status_code)
 		print(req.status_code)
+		if (req.status_code != 200):
+			wordCount.append(0)
+			delayTime.append('NULL')
+			continue
+
 		html = req.text
 		soup = BeautifulSoup(html, 'html.parser')
 		lines = soup.find_all('p')
@@ -94,7 +109,7 @@ def info():
 
 		wordCount.append(count)
 		delayTime.append('NULL')
-
+	
 	es.indices.delete(index='words', ignore=[400,404])
 
 	eList = []
@@ -108,6 +123,7 @@ def info():
 		es.index(index='words', doc_type='word', id=i+1, body=eList[i])
 
 	info = {
+		'statusList':statusList,
 		'urlList':urlList,
 		'urlCount':urlCount,
 		'wordCount':wordCount,
@@ -116,7 +132,7 @@ def info():
 		'wordList':'NULL',
 		'similList':'NULL'
 	}
-
+	
 	return render_template('fileurl.html', info=info)
 
 @app.route('/info/<kind>/<tnum>', methods=['GET'])
@@ -167,6 +183,7 @@ def analysis(kind, tnum):
 			wordDic.reverse()
 
 			info = {
+				'statusList':'NULL',
 				'urlList':urlList,
 				'urlCount':urlCount,
 				'wordCount':wordCount,
@@ -220,6 +237,7 @@ def analysis(kind, tnum):
 			es.index(index='words', doc_type='word', id=num+1, body=e1) #update delayTime
 			
 			info = {
+				'statusList':'NULL',
 				'urlList':urlList,
 				'urlCount':urlCount,
 				'wordCount':wordCount,
