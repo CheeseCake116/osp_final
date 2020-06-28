@@ -82,56 +82,62 @@
 			var failCode = failData['failCode'];
 			var failCount = failData['failCount'];
 			
-
-			pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
+			pop1.document.write("<table style='margin:auto;'>");
 
 			pop1.document.write("<tr>");
-			pop1.document.write("<td width='100' align='center'>상태</td>");
-			pop1.document.write("<td width='500' align='center'>페이지 주소</td>");
+			pop1.document.write("<td style='background-color : #EDE1E3;' width='100' align='center'>상태</td>");
+			pop1.document.write("<td style='background-color : #EDE1E3;' width='500' align='center'>페이지 주소</td>");
 			pop1.document.write("</tr>");
 
 			for(i=0;i<urlCount;i++)
 			{
 				pop1.document.write("<tr>");
-				pop1.document.write("<td align='center'><span style='color:green'>성공</span></td>");
-				pop1.document.write("<td>&nbsp;&nbsp;"+urlList[i]+"</td>");
+				pop1.document.write("<td style='background-color : #EDEEF0;' align='center'>");
+				pop1.document.write("<span style='color:green'>성공</span></td>");
+				pop1.document.write("<td style='background-color : #D1DFE8;'>&nbsp;&nbsp;&nbsp;"+urlList[i]+"</td>");
 				pop1.document.write("</tr>");
 			}
 			for(i=0;i<failCount;i++)
 			{
 				pop1.document.write("<tr>");
 				if (failCode[i] == 'rep'){
-					pop1.document.write("<td align='center'><span style='color:orange'>중복</span></td>");
+					pop1.document.write("<td style='background-color : #EDEEF0;' align='center'>");
+					pop1.document.write("<span style='color:orange'>중복</span></td>");
 				}
 				else{
-					pop1.document.write("<td align='center'><span style='color:red'>실패</span></td>");
+					pop1.document.write("<td style='background-color : #EDEEF0;' align='center'>");
+					pop1.document.write("<span style='color:red'>실패</span></td>");
 				}
-				pop1.document.write("<td>&nbsp;&nbsp;"+failList[i]+"</td>");
+				pop1.document.write("<td style='background-color : #D1DFE8;'>&nbsp;&nbsp;&nbsp;"+failList[i]+"</td>");
 				pop1.document.write("</tr>");
 			}
 			pop1.document.write("</table>");
 		}
 
-		function button1_click(wordList) {
+		function button1_click(keywordList) {
+			if(parseInt(urlCount)>1) {
+  	          		var option = "width = 600, height = 350, top = 100, left = 200, location = no"
+        	    		var pop1 = window.open("", "_blank", option);
 
-            		var option = "width = 600, height = 350, top = 100, left = 200, location = no"
-            		var pop1 = window.open("", "_blank", option);
+				pop1.document.write("<table style='margin:auto;'>");
 
-			pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
-
-			pop1.document.write("<tr>");
-			pop1.document.write("<td width='50' align='center'>순위</td>");
-			pop1.document.write("<td width='500' align='center'>자주 등장한 단어</td>");
-			pop1.document.write("</tr>");
-
-			for(i=0;i<10;i++)
-			{
 				pop1.document.write("<tr>");
-				pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+(i+1)+"</td>");
-				pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+wordList[i][0]+"</td>");
+				pop1.document.write("<td style='background-color : #EDE1E3;' width='50' align='center'>순위</td>");
+				pop1.document.write("<td style='background-color : #EDE1E3;' width='500' align='center'>주요 단어</td>");
 				pop1.document.write("</tr>");
-			}
+
+				for(i=0;i<10;i++)
+				{
+					pop1.document.write("<tr>");
+					pop1.document.write("<td style='background-color : #EDEEF0;' align='center'>"+(i+1)+"</td>");
+					pop1.document.write("<td style='background-color : #D1DFE8;'>&nbsp;&nbsp;&nbsp;"+keywordList[i]+"</td>");
+					pop1.document.write("</tr>");
+				}
 			pop1.document.write("</table>");
+			}
+			else {
+				alert("단어 분석에는 2개 이상의 url이 필요합니다.");
+			}
 		}
 
 		function button2_click(similList) {
@@ -140,18 +146,18 @@
             			var option = "width = 600, height = 350, top = 100, left = 200, location = no"
             			var pop1 = window.open("", "_blank", option);
 	
-				pop1.document.write("<table border='1' bordercolor='blue' align='center'>");
+				pop1.document.write("<table style='margin:auto;'>");
 	
 				pop1.document.write("<tr>");
-				pop1.document.write("<td width='50' align='center'>순위</td>");
-				pop1.document.write("<td width='500' align='center'>현재 url과 유사한 페이지</td>");
+				pop1.document.write("<td style='background-color : #EDE1E3;' width='50' align='center'>순위</td>");
+				pop1.document.write("<td style='background-color : #EDE1E3;' width='500' align='center'>현재 url과 유사한 페이지</td>");
 				pop1.document.write("</tr>");
 	
 				for(i=1;i<=3;i++)
 				{
 					pop1.document.write("<tr>");
-					pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+i+"</td>");
-					pop1.document.write("<td text-align:middle>&nbsp;&nbsp;"+similList[i-1][0]+"</td>");
+					pop1.document.write("<td style='background-color : #EDEEF0;' align='center'>"+i+"</td>");
+					pop1.document.write("<td style='background-color : #D1DFE8;'>&nbsp;&nbsp;&nbsp;"+similList[i-1]+"</td>");
 					pop1.document.write("</tr>");
 				}
 				pop1.document.write("</table>");
@@ -181,18 +187,13 @@
 			var urlCount=Number({{info['urlCount']|tojson}});
 			var wordCount={{info['wordCount']|tojson}};
 			var delayTime={{info['delayTime']|tojson}};
-			var statusList;
-			var failData;
-			var wordList;
-			var similList;
 			
-			document.write("<p align-'center'>");
-			document.write("<table wieth='100%'>");
+			document.write("<table style='margin:auto;'>");
 			for(i=0;i<urlCount;i++)
 			{
 				if( (i % 2) == 1){
 					document.write("<tr>");
-					document.write("<td class='even' width='900' text-align: left>");
+					document.write("<td class='even' width='600' text-align: left>");
 					document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
 					document.write("</td>");
 	
@@ -200,8 +201,9 @@
 					document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
 					document.write("</td>");
 
-					document.write("<td class='even' width='300'>");
-					document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
+					document.write("<td class='even' width='200'>");
+					document.write("&nbsp; 처리시간 (초) : ");
+					if (delayTime[i] != 'NULL') {document.write(delayTime[i]);}
 					document.write("</td>");
 
 					document.write("<td class='even' style='vertical-align:bottom' height='74'>");
@@ -218,7 +220,7 @@
 	
 				else {
 					document.write("<tr>");
-					document.write("<td width='900' text-align: left>");
+					document.write("<td width='600' text-align: left>");
 					document.write("&nbsp; URL"+ (i+1) +" : " + urlList[i]);
 					document.write("</td>");
 
@@ -226,8 +228,9 @@
 					document.write("&nbsp; 전체 단어수 : " + wordCount[i]);
 					document.write("</td>");
 
-					document.write("<td width='300'>");
-					document.write("&nbsp; 처리시간 (초) : " + delayTime[i]);
+					document.write("<td width='200'>");
+					document.write("&nbsp; 처리시간 (초) : ");
+					if (delayTime[i] != 'NULL') {document.write(delayTime[i]);}
 					document.write("</td>");
 
 					document.write("<td class='vcenter' height='74'>");
@@ -244,19 +247,18 @@
 
 			}
 			document.write("</table>");
-			document.write("</p>");
 			
 			if (analType=='NULL'){
-				statusList={{info['statusList']|tojson}};
-				failData={{info['failData']|tojson}};
+				var statusList={{info['statusList']|tojson}};
+				var failData={{info['failData']|tojson}};
 				init(statusList, urlList, urlCount, failData);
 			}
 			else if (analType=='word'){
-				wordList={{info['wordList']|tojson}};
-				button1_click(wordList);
+				var keywordList={{info['keywordList']|tojson}};
+				button1_click(keywordList);
 			}
 			else if (analType=='simil'){
-				similList={{info['similList']|tojson}};
+				var similList={{info['similList']|tojson}};
 				button2_click(similList);
 			}
 		}
